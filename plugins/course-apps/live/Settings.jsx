@@ -49,16 +49,16 @@ const LiveSettings = ({
 
   const validationSchema = {
     enabled: Yup.boolean(),
-    consumerKey: Yup.string().when(['provider', 'tierType'], {
-      is: (provider, tier) => provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial),
+    consumerKey: Yup.string().when(['provider', 'tierType', 'enabled'], {
+      is: (provider, tier, enabled) => enabled && (provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial)),
       then: Yup.string().required(intl.formatMessage(messages.consumerKeyRequired)),
     }),
-    consumerSecret: Yup.string().when(['provider', 'tierType'], {
-      is: (provider, tier) => provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial),
+    consumerSecret: Yup.string().when(['provider', 'tierType', 'enabled'], {
+      is: (provider, tier, enabled) => enabled && (provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial)),
       then: Yup.string().notRequired(intl.formatMessage(messages.consumerSecretRequired)),
     }),
-    launchUrl: Yup.string().when(['provider', 'tierType'], {
-      is: (provider, tier) => provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial),
+    launchUrl: Yup.string().when(['provider', 'tierType', 'enabled'], {
+      is: (provider, tier, enabled) => enabled && (provider === 'zoom' || (provider === 'big_blue_button' && tier === bbbPlanTypes.commercial)),
       then: Yup.string().required(intl.formatMessage(messages.launchUrlRequired)),
     }),
     launchEmail: Yup.string(),
