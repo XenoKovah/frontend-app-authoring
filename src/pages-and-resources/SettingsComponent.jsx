@@ -5,6 +5,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import ErrorAlert from '../editors/sharedComponents/ErrorAlerts/ErrorAlert';
 import messages from './messages';
+import AppSettingsModal from './app-settings-modal/AppSettingsModal'; // OST2 handouts settings UI
 
 const PluginLoadFailedError = () => {
   const intl = useIntl();
@@ -16,12 +17,22 @@ const SettingsComponent = ({ url }) => {
   const navigate = useNavigate();
 
   const LazyLoadedComponent = React.useMemo(
-    () => React.lazy(() =>
+    () => ((appId === 'handouts')
+      ? ({ onClose: handoutsClose }) => (
+        <AppSettingsModal
+          appId="handouts"
+          title="Course Handouts"
+          enableAppLabel="Enable Course Handouts"
+          enableAppHelp="Show or hide the Course Handouts section for learners and the handouts editor in Studio."
+          onClose={handoutsClose}
+        />
+      )
+      : React.lazy(() =>
       import(`@openedx-plugins/course-app-${appId}/Settings.jsx`).catch((err) => { // eslint-disable-line
         // If we couldn't load this plugin, log the details to the console.
         console.trace(err); // eslint-disable-line no-console
         return { default: PluginLoadFailedError };
-      })),
+      }))),
     [appId],
   );
 
