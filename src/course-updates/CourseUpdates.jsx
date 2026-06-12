@@ -214,6 +214,8 @@ const CourseUpdates = ({ courseId }) => {
                           <ActionRow.Spacer />
                         </ActionRow>
                       )}
+                      {/* OST2: hide handouts editor when the Course Handouts app is disabled */}
+                      {courseHandouts?.enabled !== false && (
                       <div className="updates-handouts-container">
                         <CourseHandouts
                           contentForHandouts={courseHandouts?.data || ''}
@@ -221,6 +223,7 @@ const CourseUpdates = ({ courseId }) => {
                           isDisabledButtons={isUpdateFormOpen || errors.loadingHandouts}
                         />
                       </div>
+                      )}
                       <DeleteModal
                         isOpen={isDeleteModalOpen}
                         close={closeDeleteModal}
