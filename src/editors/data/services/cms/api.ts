@@ -330,6 +330,7 @@ export const apiMethods = {
         category: blockType,
         courseKey: learningContextId,
         display_name: title,
+        has_changes: true,
         id: blockId,
         metadata: {
           display_name: title,
