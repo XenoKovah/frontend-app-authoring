@@ -40,6 +40,21 @@ pull_translations:
 	            translations/frontend-component-footer/src/i18n/messages:frontend-component-footer \
 	            translations/frontend-app-course-authoring/src/i18n/messages:frontend-app-course-authoring
 
+	# OST2: the pulled translations still carry upstream's decade-old "2014_T1"
+	# course-run example, so a non-English Studio would contradict the English
+	# source string. Rewrite the token in place, which keeps each locale's own
+	# lead-in wording ("z.B. 2026_v1", "例如：2026_v1").
+	#
+	# Substitution is textual rather than JSON-aware on purpose. Audited against
+	# openedx-translations @ release/teak.3: "2014_T1" occurs exactly once per
+	# locale file and only ever as the value of
+	# course-authoring.create-or-rerun-course.run.placeholder, so nothing else can
+	# be caught. It also covers az.json, which upstream ships as invalid JSON (an
+	# unescaped quote) that a JSON parser would refuse to load. -i.ost2bak takes an
+	# explicit suffix so this works under both GNU and BSD sed.
+	find src/i18n/messages -name '*.json' -print0 | xargs -0 sed -i.ost2bak 's/2014_T1/2026_v1/g'
+	find src/i18n/messages -name '*.json.ost2bak' -delete
+
 	$(intl_imports) frontend-component-ai-translations frontend-platform paragon frontend-component-footer frontend-app-course-authoring
 
 # This target is used by Travis.
