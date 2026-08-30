@@ -40,7 +40,6 @@ import StatusBar from './status-bar/StatusBar';
 import SectionCard from './section-card/SectionCard';
 import SubsectionCard from './subsection-card/SubsectionCard';
 import UnitCard from './unit-card/UnitCard';
-import HighlightsModal from './highlights-modal/HighlightsModal';
 import EmptyPlaceholder from './empty-placeholder/EmptyPlaceholder';
 import PublishModal from './publish-modal/PublishModal';
 import PageAlerts from './page-alerts/PageAlerts';
@@ -73,11 +72,9 @@ const CourseOutline = ({ courseId }) => {
     isSectionsExpanded,
     isInternetConnectionAlertFailed,
     isDisabledReindexButton,
-    isHighlightsModalOpen,
     isPublishModalOpen,
     isConfigureModalOpen,
     isDeleteModalOpen,
-    closeHighlightsModal,
     closePublishModal,
     handleConfigureModalClose,
     closeDeleteModal,
@@ -86,8 +83,6 @@ const CourseOutline = ({ courseId }) => {
     openDeleteModal,
     headerNavigationsActions,
     handleInternetConnectionFailed,
-    handleOpenHighlightsModal,
-    handleHighlightsFormSubmit,
     handleConfigureItemSubmit,
     handlePublishItemSubmit,
     handleEditSubmit,
@@ -337,7 +332,6 @@ const CourseOutline = ({ courseId }) => {
                                     isSelfPaced={statusBarData.isSelfPaced}
                                     isCustomRelativeDatesActive={isCustomRelativeDatesActive}
                                     savingStatus={savingStatus}
-                                    onOpenHighlightsModal={handleOpenHighlightsModal}
                                     onOpenPublishModal={openPublishModal}
                                     onOpenConfigureModal={openConfigureModal}
                                     onOpenDeleteModal={openDeleteModal}
@@ -453,11 +447,6 @@ const CourseOutline = ({ courseId }) => {
             </Layout.Element>
           </Layout>
         </section>
-        <HighlightsModal
-          isOpen={isHighlightsModalOpen}
-          onClose={closeHighlightsModal}
-          onSubmit={handleHighlightsFormSubmit}
-        />
         <PublishModal
           isOpen={isPublishModalOpen}
           onClose={closePublishModal}

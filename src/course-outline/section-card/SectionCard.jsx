@@ -5,7 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Bubble, Button, useToggle } from '@openedx/paragon';
+import { Button, useToggle } from '@openedx/paragon';
 import { Add as IconAdd } from '@openedx/paragon/icons';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
@@ -27,7 +27,6 @@ const SectionCard = ({
   children,
   index,
   canMoveItem,
-  onOpenHighlightsModal,
   onOpenPublishModal,
   onOpenConfigureModal,
   onEditSectionSubmit,
@@ -86,7 +85,6 @@ const SectionCard = ({
     hasChanges,
     published,
     visibilityState,
-    highlights,
     actions: sectionActions,
     isHeaderVisible = true,
   } = section;
@@ -145,10 +143,6 @@ const SectionCard = ({
     }
 
     closeForm();
-  };
-
-  const handleOpenHighlightsModal = () => {
-    onOpenHighlightsModal(section);
   };
 
   const handleNewSubsectionSubmit = () => {
@@ -221,19 +215,6 @@ const SectionCard = ({
             />
           )}
           <div className="section-card__content" data-testid="section-card__content">
-            <div className="outline-section__status mb-1">
-              <Button
-                className="p-0 bg-transparent"
-                data-destid="section-card-highlights-button"
-                variant="tertiary"
-                onClick={handleOpenHighlightsModal}
-              >
-                <Bubble className="mr-1">
-                  {highlights.length}
-                </Bubble>
-                <p className="m-0 text-black">{messages.sectionHighlightsBadge.defaultMessage}</p>
-              </Button>
-            </div>
             <XBlockStatus
               isSelfPaced={isSelfPaced}
               isCustomRelativeDatesActive={isCustomRelativeDatesActive}
@@ -278,7 +259,6 @@ SectionCard.propTypes = {
     published: PropTypes.bool.isRequired,
     hasChanges: PropTypes.bool.isRequired,
     visibilityState: PropTypes.string.isRequired,
-    highlights: PropTypes.arrayOf(PropTypes.string).isRequired,
     shouldScroll: PropTypes.bool,
     actions: PropTypes.shape({
       deletable: PropTypes.bool.isRequired,
@@ -305,7 +285,6 @@ SectionCard.propTypes = {
   isSelfPaced: PropTypes.bool.isRequired,
   isCustomRelativeDatesActive: PropTypes.bool.isRequired,
   children: PropTypes.node,
-  onOpenHighlightsModal: PropTypes.func.isRequired,
   onOpenPublishModal: PropTypes.func.isRequired,
   onOpenConfigureModal: PropTypes.func.isRequired,
   onEditSectionSubmit: PropTypes.func.isRequired,

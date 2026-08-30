@@ -27,7 +27,6 @@ import {
   fetchCourseBestPracticesQuery,
   fetchCourseLaunchQuery,
   fetchCourseOutlineIndexQuery,
-  updateCourseSectionHighlightsQuery,
 } from './data/thunk';
 import initializeStore from '../store';
 import {
@@ -1528,39 +1527,13 @@ describe('<CourseOutline />', () => {
     expect(checkboxes[1]).toBeChecked();
   });
 
-  it('check update highlights when update highlights query is successfully', async () => {
-    const { getByRole } = render(<RootWrapper />);
+  it('does not render the section highlights button', async () => {
+    const { queryByRole, findAllByTestId } = render(<RootWrapper />);
 
-    const section = courseOutlineIndexMock.courseStructure.childInfo.children[0];
-    const highlights = [
-      'New Highlight 1',
-      'New Highlight 2',
-      'New Highlight 3',
-      'New Highlight 4',
-      'New Highlight 5',
-    ];
+    // wait for the outline to render before asserting on what is absent
+    expect(await findAllByTestId('section-card')).not.toHaveLength(0);
 
-    axiosMock
-      .onPost(getCourseItemApiUrl(section.id), {
-        publish: 'republish',
-        metadata: {
-          highlights,
-        },
-      })
-      .reply(200, { dummy: 'value' });
-
-    axiosMock
-      .onGet(getXBlockApiUrl(section.id))
-      .reply(200, {
-        ...section,
-        highlights,
-      });
-
-    await executeThunk(updateCourseSectionHighlightsQuery(section.id, highlights), store.dispatch);
-
-    await waitFor(() => {
-      expect(getByRole('button', { name: '5 Section highlights' })).toBeInTheDocument();
-    });
+    expect(queryByRole('button', { name: /Section highlights/ })).not.toBeInTheDocument();
   });
 
   it('check whether section move up and down options work correctly', async () => {

@@ -10,7 +10,6 @@ import { RequestStatus } from '../data/constants';
 import { COURSE_BLOCK_NAMES } from './constants';
 import {
   setCurrentItem,
-  setCurrentSection,
   updateSavingStatus,
 } from './data/slice';
 import {
@@ -42,7 +41,6 @@ import {
   fetchCourseOutlineIndexQuery,
   fetchCourseReindexQuery,
   publishCourseItemQuery,
-  updateCourseSectionHighlightsQuery,
   configureCourseSectionQuery,
   configureCourseSubsectionQuery,
   configureCourseUnitQuery,
@@ -87,7 +85,6 @@ const useCourseOutline = ({ courseId }) => {
   const [isSectionsExpanded, setSectionsExpanded] = useState(true);
   const [isDisabledReindexButton, setDisableReindexButton] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [isHighlightsModalOpen, openHighlightsModal, closeHighlightsModal] = useToggle(false);
   const [isPublishModalOpen, openPublishModal, closePublishModal] = useToggle(false);
   const [isConfigureModalOpen, openConfigureModal, closeConfigureModal] = useToggle(false);
   const [isDeleteModalOpen, openDeleteModal, closeDeleteModal] = useToggle(false);
@@ -148,19 +145,6 @@ const useCourseOutline = ({ courseId }) => {
 
   const handleInternetConnectionFailed = () => {
     dispatch(updateSavingStatus({ status: RequestStatus.FAILED }));
-  };
-
-  const handleOpenHighlightsModal = (section) => {
-    dispatch(setCurrentItem(section));
-    dispatch(setCurrentSection(section));
-    openHighlightsModal();
-  };
-
-  const handleHighlightsFormSubmit = (highlights) => {
-    const dataToSend = Object.values(highlights).filter(Boolean);
-    dispatch(updateCourseSectionHighlightsQuery(currentItem.id, dataToSend));
-
-    closeHighlightsModal();
   };
 
   const handlePublishItemSubmit = () => {
@@ -306,16 +290,12 @@ const useCourseOutline = ({ courseId }) => {
     openConfigureModal,
     handleConfigureModalClose,
     headerNavigationsActions,
-    handleHighlightsFormSubmit,
     handleConfigureItemSubmit,
     handlePublishItemSubmit,
     handleEditSubmit,
     statusBarData,
     isInternetConnectionAlertFailed: isSavingStatusFailed,
     handleInternetConnectionFailed,
-    handleOpenHighlightsModal,
-    isHighlightsModalOpen,
-    closeHighlightsModal,
     courseName: courseStructure?.displayName,
     isDeleteModalOpen,
     closeDeleteModal,

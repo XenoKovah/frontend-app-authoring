@@ -89,7 +89,6 @@ const renderComponent = (props, entry = '/') => render(
             canMoveItem={jest.fn()}
             onOrderChange={jest.fn()}
             onOpenPublishModal={jest.fn()}
-            onOpenHighlightsModal={jest.fn()}
             onOpenDeleteModal={jest.fn()}
             onOpenConfigureModal={jest.fn()}
             savingStatus=""
