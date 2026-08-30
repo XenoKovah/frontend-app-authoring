@@ -37,7 +37,6 @@ import getPageHeadTitle from '../generic/utils';
 import { getCurrentItem, getProctoredExamsFlag } from './data/selectors';
 import { COURSE_BLOCK_NAMES } from './constants';
 import StatusBar from './status-bar/StatusBar';
-import EnableHighlightsModal from './enable-highlights-modal/EnableHighlightsModal';
 import SectionCard from './section-card/SectionCard';
 import SubsectionCard from './subsection-card/SubsectionCard';
 import UnitCard from './unit-card/UnitCard';
@@ -72,7 +71,6 @@ const CourseOutline = ({ courseId }) => {
     isReIndexShow,
     showSuccessAlert,
     isSectionsExpanded,
-    isEnableHighlightsModalOpen,
     isInternetConnectionAlertFailed,
     isDisabledReindexButton,
     isHighlightsModalOpen,
@@ -87,9 +85,6 @@ const CourseOutline = ({ courseId }) => {
     openConfigureModal,
     openDeleteModal,
     headerNavigationsActions,
-    openEnableHighlightsModal,
-    closeEnableHighlightsModal,
-    handleEnableHighlightsSubmit,
     handleInternetConnectionFailed,
     handleOpenHighlightsModal,
     handleHighlightsFormSubmit,
@@ -109,7 +104,6 @@ const CourseOutline = ({ courseId }) => {
     handlePasteClipboardClick,
     notificationDismissUrl,
     discussionsSettings,
-    discussionsIncontextLearnmoreUrl,
     deprecatedBlocksInfo,
     proctoringErrors,
     mfeProctoredExamSettingsUrl,
@@ -240,8 +234,6 @@ const CourseOutline = ({ courseId }) => {
           courseId={courseId}
           notificationDismissUrl={notificationDismissUrl}
           handleDismissNotification={handleDismissNotification}
-          discussionsSettings={discussionsSettings}
-          discussionsIncontextLearnmoreUrl={discussionsIncontextLearnmoreUrl}
           deprecatedBlocksInfo={deprecatedBlocksInfo}
           proctoringErrors={proctoringErrors}
           mfeProctoredExamSettingsUrl={mfeProctoredExamSettingsUrl}
@@ -264,8 +256,6 @@ const CourseOutline = ({ courseId }) => {
             courseId={courseId}
             notificationDismissUrl={notificationDismissUrl}
             handleDismissNotification={handleDismissNotification}
-            discussionsSettings={discussionsSettings}
-            discussionsIncontextLearnmoreUrl={discussionsIncontextLearnmoreUrl}
             deprecatedBlocksInfo={deprecatedBlocksInfo}
             proctoringErrors={proctoringErrors}
             mfeProctoredExamSettingsUrl={mfeProctoredExamSettingsUrl}
@@ -319,7 +309,6 @@ const CourseOutline = ({ courseId }) => {
                       courseId={courseId}
                       isLoading={isLoading}
                       statusBarData={statusBarData}
-                      openEnableHighlightsModal={openEnableHighlightsModal}
                       handleVideoSharingOptionChange={handleVideoSharingOptionChange}
                     />
                     {!errors?.outlineIndexApi && (
@@ -463,11 +452,6 @@ const CourseOutline = ({ courseId }) => {
               />
             </Layout.Element>
           </Layout>
-          <EnableHighlightsModal
-            isOpen={isEnableHighlightsModalOpen}
-            close={closeEnableHighlightsModal}
-            onEnableHighlightsSubmit={handleEnableHighlightsSubmit}
-          />
         </section>
         <HighlightsModal
           isOpen={isHighlightsModalOpen}

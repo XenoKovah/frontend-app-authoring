@@ -49,7 +49,6 @@ import messages from './messages';
 import { getClipboardUrl } from '../generic/data/api';
 import headerMessages from './header-navigations/messages';
 import cardHeaderMessages from './card-header/messages';
-import enableHighlightsModalMessages from './enable-highlights-modal/messages';
 import statusBarMessages from './status-bar/messages';
 import subsectionMessages from './subsection-card/messages';
 import pageAlertMessages from './page-alerts/messages';
@@ -452,8 +451,8 @@ describe('<CourseOutline />', () => {
     }));
   });
 
-  it('render checklist value correctly', async () => {
-    const { getByText } = render(<RootWrapper />);
+  it('does not render the checklists, highlight emails or course tags status bar items', async () => {
+    const { queryByText } = render(<RootWrapper />);
 
     await executeThunk(fetchCourseLaunchQuery({
       courseId, gradedOnly: true, validateOras: true, all: true,
@@ -462,7 +461,10 @@ describe('<CourseOutline />', () => {
       courseId, excludeGraded: true, all: true,
     }), store.dispatch);
 
-    expect(getByText('4/9 completed')).toBeInTheDocument();
+    expect(queryByText('4/9 completed')).not.toBeInTheDocument();
+    expect(queryByText('Checklists')).not.toBeInTheDocument();
+    expect(queryByText('Course highlight emails')).not.toBeInTheDocument();
+    expect(queryByText('Course tags')).not.toBeInTheDocument();
   });
 
   it('render alerts if checklist api fails', async () => {
@@ -498,35 +500,6 @@ describe('<CourseOutline />', () => {
       reindexApi: null,
       sectionLoadingApi: null,
     });
-  });
-
-  it('check highlights are enabled after enable highlights query is successful', async () => {
-    const { findByTestId, findByText } = render(<RootWrapper />);
-
-    axiosMock.reset();
-    axiosMock
-      .onPost(getCourseBlockApiUrl(courseId), {
-        publish: 'republish',
-        metadata: {
-          highlights_enabled_for_messaging: true,
-        },
-      })
-      .reply(200);
-    axiosMock
-      .onGet(getCourseOutlineIndexApiUrl(courseId))
-      .reply(200, {
-        ...courseOutlineIndexMock,
-        courseStructure: {
-          ...courseOutlineIndexMock.courseStructure,
-          highlightsEnabledForMessaging: true,
-        },
-      });
-
-    const enableButton = await findByTestId('highlights-enable-button');
-    fireEvent.click(enableButton);
-    const saveButton = await findByText(enableHighlightsModalMessages.submitButton.defaultMessage);
-    await act(async () => fireEvent.click(saveButton));
-    expect(await findByTestId('highlights-enabled-span')).toBeInTheDocument();
   });
 
   it('should expand and collapse subsections, after click on subheader buttons', async () => {

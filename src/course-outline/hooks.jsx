@@ -37,7 +37,6 @@ import {
   duplicateSectionQuery,
   duplicateSubsectionQuery,
   duplicateUnitQuery,
-  enableCourseHighlightsEmailsQuery,
   fetchCourseBestPracticesQuery,
   fetchCourseLaunchQuery,
   fetchCourseOutlineIndexQuery,
@@ -67,7 +66,6 @@ const useCourseOutline = ({ courseId }) => {
     lmsLink,
     notificationDismissUrl,
     discussionsSettings,
-    discussionsIncontextLearnmoreUrl,
     deprecatedBlocksInfo,
     proctoringErrors,
     mfeProctoredExamSettingsUrl,
@@ -86,7 +84,6 @@ const useCourseOutline = ({ courseId }) => {
   const genericSavingStatus = useSelector(getGenericSavingStatus);
   const errors = useSelector(getErrors);
 
-  const [isEnableHighlightsModalOpen, openEnableHighlightsModal, closeEnableHighlightsModal] = useToggle(false);
   const [isSectionsExpanded, setSectionsExpanded] = useState(true);
   const [isDisabledReindexButton, setDisableReindexButton] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
@@ -147,11 +144,6 @@ const useCourseOutline = ({ courseId }) => {
       setSectionsExpanded((prevState) => !prevState);
     },
     lmsLink,
-  };
-
-  const handleEnableHighlightsSubmit = () => {
-    dispatch(enableCourseHighlightsEmailsQuery(courseId));
-    closeEnableHighlightsModal();
   };
 
   const handleInternetConnectionFailed = () => {
@@ -314,15 +306,11 @@ const useCourseOutline = ({ courseId }) => {
     openConfigureModal,
     handleConfigureModalClose,
     headerNavigationsActions,
-    handleEnableHighlightsSubmit,
     handleHighlightsFormSubmit,
     handleConfigureItemSubmit,
     handlePublishItemSubmit,
     handleEditSubmit,
     statusBarData,
-    isEnableHighlightsModalOpen,
-    openEnableHighlightsModal,
-    closeEnableHighlightsModal,
     isInternetConnectionAlertFailed: isSavingStatusFailed,
     handleInternetConnectionFailed,
     handleOpenHighlightsModal,
@@ -346,7 +334,6 @@ const useCourseOutline = ({ courseId }) => {
     handlePasteClipboardClick,
     notificationDismissUrl,
     discussionsSettings,
-    discussionsIncontextLearnmoreUrl,
     deprecatedBlocksInfo,
     proctoringErrors,
     mfeProctoredExamSettingsUrl,

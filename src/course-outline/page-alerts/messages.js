@@ -11,21 +11,6 @@ const messages = defineMessages({
     defaultMessage: 'No course content is currently visible, and no learners are enrolled. Be sure to review and reset all dates, including the Course Start Date; set up the course team; review course updates and other assets for dated material; and seed the discussions and wiki.',
     description: 'Configuration error alert body in course outline.',
   },
-  discussionNotificationText: {
-    id: 'course-authoring.course-outline.page-alerts.discussionNotificationText',
-    defaultMessage: 'This course run is using an upgraded version of {platformName} discussion forum. In order to display the discussions sidebar, discussions xBlocks will no longer be visible to learners.',
-    description: 'Alert text for informing users about upgraded version of discussions forum.',
-  },
-  discussionNotificationLearnMore: {
-    id: 'course-authoring.course-outline.page-alerts.discussionNotificationLearnMore',
-    defaultMessage: 'Learn more',
-    description: 'Learn more link in upgraded discussion notification alert',
-  },
-  discussionNotificationFeedback: {
-    id: 'course-authoring.course-outline.page-alerts.discussionNotificationFeedback',
-    defaultMessage: 'Share feedback',
-    description: 'Share feedback link in upgraded discussion notification alert',
-  },
   deprecationWarningTitle: {
     id: 'course-authoring.course-outline.page-alerts.deprecationWarningTitle',
     defaultMessage: 'This course uses features that are no longer supported.',

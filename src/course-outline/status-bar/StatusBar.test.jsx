@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { initializeMockApp } from '@edx/frontend-platform';
@@ -15,7 +15,6 @@ let store;
 const mockPathname = '/foo-bar';
 const courseId = 'course-v1:123';
 const isLoading = false;
-const openEnableHighlightsModalMock = jest.fn();
 const handleVideoSharingOptionChange = jest.fn();
 
 jest.mock('react-router-dom', () => ({
@@ -32,7 +31,6 @@ jest.mock('../../generic/data/api', () => ({
 
 jest.mock('../../help-urls/hooks', () => ({
   useHelpUrls: () => ({
-    contentHighlights: 'content-highlights-link',
     socialSharing: 'social-sharing-link',
   }),
 }));
@@ -61,7 +59,6 @@ const renderComponent = (props) => render(
         <StatusBar
           courseId={courseId}
           isLoading={isLoading}
-          openEnableHighlightsModal={openEnableHighlightsModalMock}
           handleVideoSharingOptionChange={handleVideoSharingOptionChange}
           statusBarData={statusBarData}
           {...props}
@@ -93,13 +90,17 @@ describe('<StatusBar />', () => {
     expect(getByText(messages.pacingTypeTitle.defaultMessage)).toBeInTheDocument();
     expect(getByText(messages.pacingTypeSelfPaced.defaultMessage)).toBeInTheDocument();
 
-    expect(getByText(messages.checklistTitle.defaultMessage)).toBeInTheDocument();
-    expect(getByText(`2/9 ${messages.checklistCompleted.defaultMessage}`)).toBeInTheDocument();
-
-    expect(getByText(messages.highlightEmailsTitle.defaultMessage)).toBeInTheDocument();
-    expect(getByText(messages.highlightEmailsEnabled.defaultMessage)).toBeInTheDocument();
-
     expect(getByText(messages.videoSharingTitle.defaultMessage)).toBeInTheDocument();
+  });
+
+  it('does not render the checklists, highlight emails or course tags items', () => {
+    const { queryByText } = renderComponent();
+
+    expect(queryByText('Checklists')).not.toBeInTheDocument();
+    expect(queryByText('2/9 completed')).not.toBeInTheDocument();
+    expect(queryByText('Course highlight emails')).not.toBeInTheDocument();
+    expect(queryByText('Enabled')).not.toBeInTheDocument();
+    expect(queryByText('Course tags')).not.toBeInTheDocument();
   });
 
   it('renders StatusBar when isSelfPaced is false', () => {
@@ -113,17 +114,15 @@ describe('<StatusBar />', () => {
     expect(getByText(messages.pacingTypeInstructorPaced.defaultMessage)).toBeInTheDocument();
   });
 
-  it('calls openEnableHighlightsModal function when the "Enable Highlight Emails" button is clicked', () => {
-    const { getByRole } = renderComponent({
+  it('does not render the "Enable now" highlight emails button', () => {
+    const { queryByRole } = renderComponent({
       statusBarData: {
         ...statusBarData,
         highlightsEnabledForMessaging: false,
       },
     });
 
-    const enableHighlightsButton = getByRole('button', { name: messages.highlightEmailsButton.defaultMessage });
-    fireEvent.click(enableHighlightsButton);
-    expect(openEnableHighlightsModalMock).toHaveBeenCalledTimes(1);
+    expect(queryByRole('button', { name: 'Enable now' })).not.toBeInTheDocument();
   });
 
   it('not render component when isLoading is true', () => {
@@ -145,22 +144,14 @@ describe('<StatusBar />', () => {
     expect(queryByTestId('video-sharing-wrapper')).not.toBeInTheDocument();
   });
 
-  it('renders the tag count if the waffle flag is enabled', async () => {
+  it('does not render the tag count even if the waffle flag is enabled', () => {
     setConfig({
       ...getConfig(),
       ENABLE_TAGGING_TAXONOMY_PAGES: 'true',
     });
-    const { findByText } = renderComponent();
-
-    expect(await findByText('17')).toBeInTheDocument();
-  });
-  it('doesnt renders the tag count if the waffle flag is disabled', () => {
-    setConfig({
-      ...getConfig(),
-      ENABLE_TAGGING_TAXONOMY_PAGES: 'false',
-    });
     const { queryByText } = renderComponent();
 
     expect(queryByText('17')).not.toBeInTheDocument();
+    expect(queryByText('Manage tags')).not.toBeInTheDocument();
   });
 });

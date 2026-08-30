@@ -30,8 +30,6 @@ const PageAlerts = ({
   courseId,
   notificationDismissUrl,
   handleDismissNotification,
-  discussionsSettings,
-  discussionsIncontextLearnmoreUrl,
   deprecatedBlocksInfo,
   proctoringErrors,
   mfeProctoredExamSettingsUrl,
@@ -42,11 +40,7 @@ const PageAlerts = ({
   const intl = useIntl();
   const dispatch = useDispatch();
   const studioBaseUrl = getConfig().STUDIO_BASE_URL;
-  const discussionAlertDismissKey = `discussionAlertDismissed-${courseId}`;
   const [showConfigAlert, setShowConfigAlert] = useState(true);
-  const [showDiscussionAlert, setShowDiscussionAlert] = useState(
-    localStorage.getItem(discussionAlertDismissKey) === null,
-  );
   const { newFiles, conflictingFiles, errorFiles } = useSelector(getPasteFileNotices);
   const [showOutOfSyncAlert, setShowOutOfSyncAlert] = useState(false);
   const navigate = useNavigate();
@@ -78,42 +72,6 @@ const PageAlerts = ({
         variant="info"
         onClose={onDismiss}
       />
-    );
-  };
-
-  const discussionNotification = () => {
-    const { providerType } = discussionsSettings || {};
-    if (providerType !== 'openedx') {
-      return null;
-    }
-
-    const onDismiss = () => {
-      setShowDiscussionAlert(false);
-      localStorage.setItem(discussionAlertDismissKey, 'true');
-    };
-
-    return (
-      <Alert
-        dismissible
-        show={showDiscussionAlert}
-        icon={InfoOutlineIcon}
-        variant="info"
-        onClose={onDismiss}
-        actions={[
-          <Button
-            href={discussionsIncontextLearnmoreUrl}
-            target="_blank"
-          >
-            {intl.formatMessage(messages.discussionNotificationLearnMore)}
-          </Button>,
-        ]}
-      >
-        <div className="font-weight-normal text-gray mw-md">
-          {intl.formatMessage(messages.discussionNotificationText, {
-            platformName: process.env.SITE_NAME,
-          })}
-        </div>
-      </Alert>
     );
   };
 
@@ -426,7 +384,6 @@ const PageAlerts = ({
   return (
     <>
       {configurationErrors()}
-      {discussionNotification()}
       {deprecationWarning()}
       {proctoringAlerts()}
       <ErrorAlert hideHeading isError={savingStatus === RequestStatus.FAILED}>
@@ -444,8 +401,6 @@ const PageAlerts = ({
 PageAlerts.defaultProps = {
   notificationDismissUrl: '',
   handleDismissNotification: null,
-  discussionsSettings: {},
-  discussionsIncontextLearnmoreUrl: '',
   deprecatedBlocksInfo: {},
   proctoringErrors: [],
   mfeProctoredExamSettingsUrl: '',
@@ -458,10 +413,6 @@ PageAlerts.propTypes = {
   courseId: PropTypes.string.isRequired,
   notificationDismissUrl: PropTypes.string,
   handleDismissNotification: PropTypes.func,
-  discussionsSettings: PropTypes.shape({
-    providerType: PropTypes.string,
-  }),
-  discussionsIncontextLearnmoreUrl: PropTypes.string,
   deprecatedBlocksInfo: PropTypes.shape({
     blocks: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     deprecatedEnabledBlockTypes: PropTypes.arrayOf(PropTypes.string),

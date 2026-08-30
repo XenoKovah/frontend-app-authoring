@@ -4,23 +4,18 @@ import { Hyperlink } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { HelpSidebar } from '../../generic/help-sidebar';
-import { useHelpUrls } from '../../help-urls/hooks';
 import { getFormattedSidebarMessages } from './utils';
+
+// The `outline` help token the CMS serves still points at the retired
+// edx.readthedocs.io "Building and Running an Open edX Course" project, which
+// 404s, so link the live docs.openedx.org page directly instead.
+const COURSE_OUTLINE_DOC_URL = 'https://docs.openedx.org/en/latest/educators/concepts/open_edx_platform/about_course_outline.html';
 
 const OutlineSideBar = ({ courseId }) => {
   const intl = useIntl();
-  const {
-    visibility: learnMoreVisibilityUrl,
-    grading: learnMoreGradingUrl,
-    outline: learnMoreOutlineUrl,
-  } = useHelpUrls(['visibility', 'grading', 'outline']);
 
   const sidebarMessages = getFormattedSidebarMessages(
-    {
-      learnMoreGradingUrl,
-      learnMoreOutlineUrl,
-      learnMoreVisibilityUrl,
-    },
+    { learnMoreOutlineUrl: COURSE_OUTLINE_DOC_URL },
     intl,
   );
 

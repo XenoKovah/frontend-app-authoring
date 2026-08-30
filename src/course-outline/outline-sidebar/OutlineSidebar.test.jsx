@@ -67,18 +67,28 @@ describe('<OutlineSidebar />', () => {
       expect(getByText(messages.section_2_title.defaultMessage)).toBeInTheDocument();
       expect(getByText(messages.section_2_descriptions_1.defaultMessage)).toBeInTheDocument();
       expect(getByText(messages.section_2_link.defaultMessage)).toBeInTheDocument();
+    });
+  });
 
-      expect(getByText(messages.section_3_title.defaultMessage)).toBeInTheDocument();
-      expect(getByText(messages.section_3_descriptions_1.defaultMessage)).toBeInTheDocument();
-      expect(getByText(messages.section_3_link.defaultMessage)).toBeInTheDocument();
+  it('does not render the release dates or content visibility sections', async () => {
+    const { queryByText } = renderComponent();
 
-      expect(getByText(messages.section_4_title.defaultMessage)).toBeInTheDocument();
-      expect(getByText(messages.section_4_descriptions_1.defaultMessage)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByText('Setting release dates and grading policies')).not.toBeInTheDocument();
+      expect(queryByText('Learn more about grading policy settings')).not.toBeInTheDocument();
+      expect(queryByText('Changing the content learners see')).not.toBeInTheDocument();
+      expect(queryByText('Learn more about content visibility settings')).not.toBeInTheDocument();
+    });
+  });
 
-      expect(getByText(messages.section_4_descriptions_2.defaultMessage)).toBeInTheDocument();
-      expect(getByText(messages.section_4_descriptions_3.defaultMessage)).toBeInTheDocument();
+  it('links the course outline docs at their live docs.openedx.org location', async () => {
+    const { getByText } = renderComponent();
 
-      expect(getByText(messages.section_4_link.defaultMessage)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText(messages.section_2_link.defaultMessage).closest('a')).toHaveAttribute(
+        'href',
+        'https://docs.openedx.org/en/latest/educators/concepts/open_edx_platform/about_course_outline.html',
+      );
     });
   });
 });
