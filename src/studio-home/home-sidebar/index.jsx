@@ -4,8 +4,7 @@ import { MailtoLink } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { COURSE_CREATOR_STATES } from '../../constants';
-import { useHelpUrls } from '../../help-urls/hooks';
-import { HelpSidebar, HelpSidebarLink } from '../../generic/help-sidebar';
+import { HelpSidebar } from '../../generic/help-sidebar';
 import { getStudioHomeData } from '../data/selectors';
 import messages from './messages';
 
@@ -14,12 +13,10 @@ const HomeSidebar = () => {
   const {
     studioName,
     platformName,
-    studioShortName,
     studioRequestEmail,
     techSupportEmail,
     courseCreatorStatus,
   } = useSelector(getStudioHomeData);
-  const { home: aboutHomeLink } = useHelpUrls(['home']);
 
   // eslint-disable-next-line max-len
   const isShowMailToGetInstruction = courseCreatorStatus === COURSE_CREATOR_STATES.disallowedForThisSite
@@ -29,20 +26,8 @@ const HomeSidebar = () => {
 
   return (
     <HelpSidebar>
-      <h4 className="help-sidebar-about-title">
-        {intl.formatMessage(messages.aboutTitle, { studioName })}
-      </h4>
-      <p className="help-sidebar-about-descriptions">
-        {intl.formatMessage(messages.aboutDescription, { studioShortName })}
-      </p>
-      <HelpSidebarLink
-        as="span"
-        pathToPage={aboutHomeLink || ''}
-        title={intl.formatMessage(messages.studioHomeLinkToGettingStarted, { studioName })}
-      />
       {isShowMailToGetInstruction && (
         <>
-          <hr />
           <h4 className="help-sidebar-about-title">
             {intl.formatMessage(messages.sidebarHeader2, { studioName })}
           </h4>
@@ -61,7 +46,6 @@ const HomeSidebar = () => {
       )}
       {isShowUnrequestedInstruction && (
         <>
-          <hr />
           <h4 className="help-sidebar-about-title">
             {intl.formatMessage(messages.sidebarHeader3, { studioName })}
           </h4>
@@ -72,7 +56,6 @@ const HomeSidebar = () => {
       )}
       {isShowDeniedInstruction && (
         <>
-          <hr />
           <h4 className="help-sidebar-about-title">
             {intl.formatMessage(messages.sidebarHeader4, { studioName })}
           </h4>

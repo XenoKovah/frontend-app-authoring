@@ -1,18 +1,6 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
-  aboutTitle: {
-    id: 'course-authoring.studio-home.sidebar.about.title',
-    defaultMessage: 'New to {studioName}?',
-  },
-  aboutDescription: {
-    id: 'course-authoring.studio-home.sidebar.about.description',
-    defaultMessage: 'Click "Looking for help with Studio" at the bottom of the page to access our continually updated documentation and other {studioShortName} resources.',
-  },
-  studioHomeLinkToGettingStarted: {
-    id: 'course-authoring.studio-home.sidebar.about.getting-started',
-    defaultMessage: 'Getting started with {studioName}',
-  },
   sidebarHeader2: {
     id: 'course-authoring.studio-home.sidebar.about.header-2',
     defaultMessage: 'Can I create courses in {studioName}?',

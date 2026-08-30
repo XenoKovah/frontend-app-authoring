@@ -42,12 +42,13 @@ describe('<HomeSidebar />', () => {
     store = initializeStore();
   });
 
-  it('renders about and other sidebar titles correctly', () => {
+  it('does not render the "New to Studio" about blurb', () => {
     useSelector.mockReturnValue(studioHomeMock);
 
-    const { getByText } = render(<RootWrapper />);
-    expect(getByText(`New to ${studioName}?`)).toBeInTheDocument();
-    expect(getByText(`Click "Looking for help with Studio" at the bottom of the page to access our continually updated documentation and other ${studioShortName} resources.`)).toBeInTheDocument();
+    const { queryByText } = render(<RootWrapper />);
+    expect(queryByText(`New to ${studioName}?`)).not.toBeInTheDocument();
+    expect(queryByText(`Click "Looking for help with Studio" at the bottom of the page to access our continually updated documentation and other ${studioShortName} resources.`)).not.toBeInTheDocument();
+    expect(queryByText(`Getting started with ${studioName}`)).not.toBeInTheDocument();
   });
 
   it('shows mail to get instruction', () => {
