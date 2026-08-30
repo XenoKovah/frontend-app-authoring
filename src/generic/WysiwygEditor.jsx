@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import TinyMceWidget, { prepareEditorRef } from '../editors/sharedComponents/TinyMceWidget';
@@ -15,6 +15,18 @@ export const WysiwygEditor = ({
 }) => {
   const { editorRef, refReady, setEditorRef } = prepareEditorRef();
   const { courseId } = useSelector((state) => state.courseDetail);
+
+  // TinyMCE re-serializes whatever HTML it is handed -- it terminates style
+  // attributes with a semicolon, self-closes void elements and so on -- and
+  // emits that as a content change the moment the editor finishes loading. Keep
+  // its rendering of the *unedited* document so reformatting on load is not
+  // mistaken for something the author typed.
+  const initialEditorContent = useRef(null);
+  const handleSetEditorRef = useCallback((ref) => {
+    setEditorRef(ref);
+    initialEditorContent.current = ref?.getContent?.() ?? null;
+  }, [setEditorRef]);
+
   const isEquivalentCodeExtraSpaces = (first, second) => {
     // Utils allows to compare code extra spaces
     const removeWhitespace = (str) => str.replace(/\s/g, '');
@@ -27,9 +39,12 @@ export const WysiwygEditor = ({
     return normalizeQuotes(first) === normalizeQuotes(second);
   };
 
+  const isEquivalentToLoaded = (value) => [initialValue, initialEditorContent.current]
+    .filter((loaded) => typeof loaded === 'string')
+    .some((loaded) => isEquivalentCodeQuotes(loaded, value) || isEquivalentCodeExtraSpaces(loaded, value));
+
   // default initial string returned onEditorChange if empty input
-  const needToChange = (value) => !isEquivalentCodeQuotes(initialValue, value)
-    && !isEquivalentCodeExtraSpaces(initialValue, value)
+  const needToChange = (value) => !isEquivalentToLoaded(value)
     && (initialValue !== DEFAULT_EMPTY_WYSIWYG_VALUE || value !== '');
 
   const handleUpdate = (value, editor) => {
@@ -54,7 +69,7 @@ export const WysiwygEditor = ({
       initialValue={initialValue}
       minHeight={minHeight}
       editorContentHtml={initialValue}
-      setEditorRef={setEditorRef}
+      setEditorRef={handleSetEditorRef}
       onChange={handleUpdate}
       initializeEditor={() => ({})}
       learningContextId={courseId}
