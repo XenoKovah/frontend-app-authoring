@@ -72,7 +72,7 @@ const messages = defineMessages({
   },
   courseRunPlaceholder: {
     id: 'course-authoring.create-or-rerun-course.run.placeholder',
-    defaultMessage: 'e.g. 2014_T1',
+    defaultMessage: 'e.g. 2026_v1',
   },
   courseRunCreateHelpText: {
     id: 'course-authoring.create-or-rerun-course.create.run.help-text',
