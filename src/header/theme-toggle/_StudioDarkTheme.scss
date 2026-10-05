@@ -105,3 +105,189 @@ body.indigo-dark-theme #paragon-portal-root {
 body.indigo-dark-theme .course-unit-sidebar-visibility-title {
   color: #B0B0B0;
 }
+
+// OST2 dark-mode sweep 2026-10-05: every Studio page, dialog, menu and form was
+// audited in dark mode (contrast + light-surface check). Studio's own page styles
+// hard-code light colors ($white/$black/$gray-700 cards, rows and text) that the
+// Indigo dark partial never targets, and dialogs/menus/pickers render in
+// #paragon-portal-root outside #root. Outline rows get their white from inline
+// styles (DraggableList), hence !important there.
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .bg-white,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .bg-light-100,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .bg-light-200,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .bg-light-300,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .bg-light-400 {
+  background-color: #292A2C !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-black,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-dark,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-gray-900,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-gray-800,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-gray-700,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-primary-500 {
+  color: #F8F8F8 !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-gray-500,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-gray-600,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .text-muted {
+  color: #B0B0B0 !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) strong,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) b,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) small,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__card-header-title-sm,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .card-item-title,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .grading-scale-tick-number,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .certificate-details__info-paragraph,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .section-title,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .signatory__text,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .member-info-name {
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .sub-header-title-subtitle,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .sub-header-instructions,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .help-sidebar-about-descriptions,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__card-header-subtitle-sm,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .certificate-details__info-paragraph-course-number,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__form-control-disabled .pgn__form-label,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__form-text-default {
+  color: #B0B0B0;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) a.pgn__hyperlink,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) a.link-muted,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .nav-link.active,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__tabs .nav-link.active {
+  color: #AEC7F6;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .course-outline-section .mx-0.row {
+  background: #292A2C !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .section-card__subsections .mx-0.row {
+  background: #36383B !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .subsection-card__units .mx-0.row {
+  background: #292A2C !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .course-grading-assignment-wrapper,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .add-user-form,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .update-form,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .textbook-form,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .configuration-card,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .course-team-member,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .updates-container,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__data-table-wrapper,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__data-table-wrapper th,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__data-table-row,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__dropzone,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__dropzone__upload-icon-wrapper,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .image-preview,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .datepicker-custom-control,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .tox-toolbar-overlord {
+  background-color: #292A2C;
+  border-color: #36383B;
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .grading-description,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .grading-description div,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__form-control-decorator {
+  color: #B0B0B0;
+}
+
+body.indigo-dark-theme select {
+  color-scheme: dark;
+}
+
+body.indigo-dark-theme select option,
+body.indigo-dark-theme select optgroup {
+  background-color: #292A2C;
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .section-card-title,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .subsection-card-title,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .unit-card-title {
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .status-grading-value,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .status-release-value,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .item-card-header__subtitle {
+  color: #B0B0B0;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .grading-label {
+  color: #B0B0B0;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .grading-scale-segment.segment--1 .grading-scale-segment-content-number {
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .badge-current-user,
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .badge-current-user .badge-current-user {
+  color: #0D0D0E !important;
+}
+
+body.indigo-dark-theme :is(#root, #paragon-portal-root) .pgn__dropzone__upload-restriction-message {
+  color: #B0B0B0;
+}
+
+body.indigo-dark-theme .react-datepicker {
+  background-color: #292A2C;
+  border-color: #36383B;
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme .react-datepicker__header {
+  background-color: #36383B;
+  border-bottom-color: #36383B;
+}
+
+body.indigo-dark-theme .react-datepicker__current-month,
+body.indigo-dark-theme .react-datepicker-time__header,
+body.indigo-dark-theme .react-datepicker__day-name,
+body.indigo-dark-theme .react-datepicker__day,
+body.indigo-dark-theme .react-datepicker__time-name {
+  color: #F8F8F8;
+}
+
+body.indigo-dark-theme .react-datepicker__day:hover,
+body.indigo-dark-theme .react-datepicker__day--keyboard-selected {
+  background-color: #36383B;
+}
+
+body.indigo-dark-theme .react-datepicker__day--disabled,
+body.indigo-dark-theme .react-datepicker__day--outside-month {
+  color: #A0A0B4;
+}
+
+body.indigo-dark-theme .react-datepicker__triangle::before,
+body.indigo-dark-theme .react-datepicker__triangle::after {
+  border-bottom-color: #36383B !important;
+}
+
+body.indigo-dark-theme .pgn__menu {
+  background-color: #292A2C;
+  border-color: #36383B;
+}
+
+body.indigo-dark-theme .pgn__menu .pgn__menu-item {
+  background-color: transparent;
+  color: #F8F8F8;
+
+  &:hover,
+  &:focus {
+    background-color: #36383B;
+    color: #F8F8F8;
+  }
+}
