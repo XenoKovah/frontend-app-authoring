@@ -86,6 +86,11 @@ const messages = defineMessages({
       + 'available from sources other than the Open edX community.',
     description: 'Message for support status tooltip for modules with provisional platform support',
   },
+  markAsCompleteButtonLabel: {
+    id: 'course-authoring.course-unit.add.component.button.mark-as-complete',
+    defaultMessage: 'Mark as complete',
+    description: 'OST2: label of the add-component button that adds a Completion block (a learner "mark as complete" checkbox)',
+  },
 });
 
 export default messages;

@@ -96,7 +96,11 @@ const mockWithMarkdown = () => ({
     component.type === COMPONENT_TYPES.advanced
       ? {
         ...component,
-        templates: [...component.templates, { category: 'markdown', display_name: 'Markdown', support_level: true }],
+        templates: [
+          ...component.templates,
+          { category: 'markdown', display_name: 'Markdown', support_level: true },
+          { category: 'done', display_name: 'Completion', support_level: true },
+        ],
       }
       : component
   )),
@@ -129,19 +133,40 @@ describe('<AddComponent />', () => {
     expect(getMenuButtonLabels()).toEqual(['Text', 'Video', 'Problem', 'Discussion', 'Advanced']);
   });
 
-  it('puts Markdown first and takes it out of the Advanced dialog', async () => {
+  it('puts Markdown first and Mark as complete before Advanced, and takes them out of the Advanced dialog', async () => {
     axiosMock
       .onGet(getCourseSectionVerticalApiUrl(blockId))
       .reply(200, mockWithMarkdown());
     await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
     renderComponent();
 
-    expect(getMenuButtonLabels()).toEqual(['Markdown', 'Text', 'Video', 'Problem', 'Discussion', 'Advanced']);
+    expect(getMenuButtonLabels()).toEqual([
+      'Markdown', 'Text', 'Video', 'Problem', 'Discussion', 'Mark as complete', 'Advanced',
+    ]);
 
     userEvent.click(screen.getByRole('button', {
       name: new RegExp(`${messages.buttonText.defaultMessage} Advanced`, 'i'),
     }));
-    expect(within(screen.getByRole('dialog')).queryByRole('radio', { name: 'Markdown' })).not.toBeInTheDocument();
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).queryByRole('radio', { name: 'Markdown' })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole('radio', { name: 'Completion' })).not.toBeInTheDocument();
+  });
+
+  it('creates a Completion xblock from the Mark as complete button', async () => {
+    axiosMock
+      .onGet(getCourseSectionVerticalApiUrl(blockId))
+      .reply(200, mockWithMarkdown());
+    await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
+    renderComponent();
+
+    userEvent.click(screen.getByRole('button', {
+      name: new RegExp(`${messages.buttonText.defaultMessage} Mark as complete`, 'i'),
+    }));
+    expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
+      parentLocator: '123',
+      type: 'done',
+      category: 'done',
+    });
   });
 
   it('creates a Markdown xblock from the Markdown button', async () => {

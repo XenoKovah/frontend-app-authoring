@@ -13,7 +13,7 @@ import { COMPONENT_TYPES } from '../../generic/block-type-utils/constants';
 import ComponentModalView from './add-component-modals/ComponentModalView';
 import AddComponentButton from './add-component-btn';
 import messages from './messages';
-import { buildOst2ComponentMenu, OST2_MARKDOWN_TYPE } from './ost2ComponentMenu';
+import { buildOst2ComponentMenu, OST2_COMPLETION_TYPE, OST2_PROMOTED_ADVANCED_TYPES } from './ost2ComponentMenu';
 import { ComponentPicker } from '../../library-authoring/component-picker';
 import { messageTypes } from '../constants';
 import { useIframe } from '../../generic/hooks/context/hooks';
@@ -47,8 +47,11 @@ const AddComponent = ({
   const { sendMessageToIframe } = useIframe();
   const { useVideoGalleryFlow, useReactMarkdownEditor } = useSelector(getWaffleFlags);
   const { menu: menuTemplates, movedTargets } = useMemo(
-    () => buildOst2ComponentMenu(Array.isArray(componentTemplates) ? componentTemplates : []),
-    [componentTemplates],
+    () => buildOst2ComponentMenu(
+      Array.isArray(componentTemplates) ? componentTemplates : [],
+      { [OST2_COMPLETION_TYPE]: intl.formatMessage(messages.markAsCompleteButtonLabel) },
+    ),
+    [componentTemplates, intl],
   );
 
   const receiveMessage = useCallback(({ data: { type, payload } }) => {
@@ -167,6 +170,18 @@ const AddComponent = ({
                   return null;
                 }
 
+                if (OST2_PROMOTED_ADVANCED_TYPES.includes(type)) {
+                  return (
+                    <li key={type}>
+                      <AddComponentButton
+                        onClick={() => handleCreateNewXBlock(COMPONENT_TYPES.advanced, type)}
+                        displayName={displayName}
+                        type={type}
+                      />
+                    </li>
+                  );
+                }
+
                 switch (type) {
                   case COMPONENT_TYPES.advanced:
                     modalParams = {
@@ -189,16 +204,6 @@ const AddComponent = ({
                       isOpen: isOpenOpenAssessment,
                     };
                     break;
-                  case OST2_MARKDOWN_TYPE:
-                    return (
-                      <li key={type}>
-                        <AddComponentButton
-                          onClick={() => handleCreateNewXBlock(COMPONENT_TYPES.advanced, OST2_MARKDOWN_TYPE)}
-                          displayName={displayName}
-                          type={type}
-                        />
-                      </li>
-                    );
                   default:
                     return (
                       <li key={type}>

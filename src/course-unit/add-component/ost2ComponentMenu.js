@@ -1,11 +1,16 @@
 import { COMPONENT_TYPES } from '../../generic/block-type-utils/constants';
 
 // OST2: layout of the unit page's "Add a new component" menu.
-// The first row is Markdown, Text, Video, Problem, Discussion, then Advanced.
-// Markdown is an advanced module, promoted to its own button (and dropped from
-// the Advanced list). Every other component type moves into the Advanced
-// dialog, which lists everything alphabetically.
+// The buttons are Markdown, Text, Video, Problem, Discussion, Mark as complete,
+// then Advanced. Markdown and Completion ("Mark as complete") are advanced
+// modules, promoted to their own buttons (and dropped from the Advanced list).
+// Every other component type moves into the Advanced dialog, which lists
+// everything alphabetically.
 export const OST2_MARKDOWN_TYPE = 'markdown';
+export const OST2_COMPLETION_TYPE = 'done';
+
+// Advanced modules that get their own button; each creates its block directly.
+export const OST2_PROMOTED_ADVANCED_TYPES = [OST2_MARKDOWN_TYPE, OST2_COMPLETION_TYPE];
 
 const PRIMARY_TYPES = [
   OST2_MARKDOWN_TYPE,
@@ -13,6 +18,7 @@ const PRIMARY_TYPES = [
   COMPONENT_TYPES.video,
   COMPONENT_TYPES.problem,
   COMPONENT_TYPES.discussion,
+  OST2_COMPLETION_TYPE,
 ];
 
 // Value of a moved component's radio option in the Advanced dialog.
@@ -20,16 +26,16 @@ const MOVED_PREFIX = 'ost2-moved:';
 
 /**
  * @param {Array} componentTemplates the unit's component templates, as the API returns them
+ * @param {Object} buttonLabels optional button label per promoted advanced module, e.g. `{ done: 'Mark as complete' }`
  * @returns {{ menu: Array, movedTargets: Object }} `menu` is the list of components to show,
  *   in order; `movedTargets` maps each moved Advanced option's value to the
  *   `{ type, moduleName }` its own button would have created.
  */
-export const buildOst2ComponentMenu = (componentTemplates) => {
+export const buildOst2ComponentMenu = (componentTemplates, buttonLabels = {}) => {
   const available = componentTemplates.filter((component) => component.templates.length);
   const byType = Object.fromEntries(available.map((component) => [component.type, component]));
   const advanced = byType[COMPONENT_TYPES.advanced];
   const advancedTemplates = advanced?.templates || [];
-  const markdownTemplate = advancedTemplates.find((template) => template.category === OST2_MARKDOWN_TYPE);
 
   const movedTargets = {};
   const movedTemplates = available
@@ -57,17 +63,18 @@ export const buildOst2ComponentMenu = (componentTemplates) => {
     });
 
   const advancedList = [
-    ...advancedTemplates.filter((template) => template.category !== OST2_MARKDOWN_TYPE),
+    ...advancedTemplates.filter((template) => !OST2_PROMOTED_ADVANCED_TYPES.includes(template.category)),
     ...movedTemplates,
   ].sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   const primary = PRIMARY_TYPES
     .map((type) => {
-      if (type === OST2_MARKDOWN_TYPE) {
-        return markdownTemplate && {
-          type: OST2_MARKDOWN_TYPE,
-          displayName: markdownTemplate.displayName,
-          templates: [markdownTemplate],
+      if (OST2_PROMOTED_ADVANCED_TYPES.includes(type)) {
+        const template = advancedTemplates.find(({ category }) => category === type);
+        return template && {
+          type,
+          displayName: buttonLabels[type] || template.displayName,
+          templates: [template],
         };
       }
       return byType[type];
