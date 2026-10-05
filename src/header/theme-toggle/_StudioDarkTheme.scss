@@ -36,3 +36,72 @@ body.indigo-dark-theme .studio-header {
     color: #F8F8F8;
   }
 }
+
+// Editors, pickers and other dialogs render in #paragon-portal-root, outside
+// #root, so the Indigo dark rules (mostly `#root ...`) miss them: Paragon's
+// white cards (.card, .collapsible-card - Video editor), selectable boxes and
+// .bg-light-* panels (Problem type chooser) and the search field (library
+// picker) stayed light under light text.
+body.indigo-dark-theme #paragon-portal-root {
+  .pgn__modal {
+    color: #F8F8F8;
+  }
+
+  .card,
+  .collapsible-card,
+  .collapsible-card-lg {
+    background: #292A2C;
+    border-color: #36383B;
+    color: #F8F8F8;
+  }
+
+  .img-thumbnail {
+    background: #36383B;
+    border-color: #36383B;
+  }
+
+  .pgn__selectable_box {
+    background: #292A2C;
+    border-color: #36383B !important;
+    color: #F8F8F8;
+
+    &:hover,
+    &:focus,
+    &.pgn__selectable_box-active {
+      border-color: #AEC7F6 !important;
+    }
+  }
+
+  // Paragon utilities are !important.
+  .bg-white,
+  .bg-light-100,
+  .bg-light-200,
+  .bg-light-300,
+  .bg-light-400 {
+    background-color: #292A2C !important;
+  }
+
+  .text-info-500 {
+    color: #AEC7F6 !important;
+  }
+
+  .pgn__form-text-default {
+    color: #B0B0B0;
+  }
+
+  .pgn__searchfield-form,
+  .pgn__searchfield-form input {
+    background: #292A2C;
+    color: #F8F8F8;
+  }
+
+  // Variant-less alert (e.g. the library picker's empty state).
+  .alert-content {
+    color: #F8F8F8;
+  }
+}
+
+// Unit page sidebar: "WILL BE VISIBLE TO" label (#454545 on the dark page).
+body.indigo-dark-theme .course-unit-sidebar-visibility-title {
+  color: #B0B0B0;
+}
