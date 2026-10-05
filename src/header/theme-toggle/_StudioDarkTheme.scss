@@ -1,0 +1,38 @@
+// OST2: Studio-specific dark-theme fixes the Indigo dark partial does not cover.
+// StudioHeader paints itself white (var(--pgn-color-white)); match the Indigo
+// learning header instead: page background, light text, faint light shadow.
+body.indigo-dark-theme .studio-header {
+  background: #0D0D0E;
+  box-shadow: 0 1px 2px 0 rgb(255 255 255 / .8), 0 1px 3px 0 rgb(255 255 255 / .1);
+  color: #F8F8F8;
+
+  .course-title-lockup {
+    border-right-color: #36383B;
+
+    // The spans carry .text-gray-800, whose utility colour is !important.
+    span {
+      color: #F8F8F8 !important;
+
+      &.small {
+        color: #DDDFE2 !important;
+      }
+    }
+  }
+
+  .btn-outline-primary,
+  .btn-tertiary {
+    border-color: transparent;
+    background: transparent;
+    color: #F8F8F8;
+
+    &:hover,
+    &:focus {
+      background: #292A2C;
+      color: #F8F8F8;
+    }
+  }
+
+  .btn-icon {
+    color: #F8F8F8;
+  }
+}

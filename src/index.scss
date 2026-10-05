@@ -33,6 +33,12 @@
 @import "group-configurations/GroupConfigurations";
 @import "optimizer-page/scan-results/ScanResults";
 
+// OST2: Indigo light/dark theme toggle. The Indigo dark partial is entirely scoped
+// to `body.indigo-dark-theme`, so the light Studio look is unchanged.
+@import "header/theme-toggle/ThemeToggle";
+@import "~@edly-io/indigo-brand-openedx/paragon/dark";
+@import "header/theme-toggle/StudioDarkTheme";
+
 // To apply the glow effect to the selected Section/Subsection, in the Course Outline
 div.row:has(> div > div.highlight) {
   animation: 5s glow;
@@ -70,8 +76,3 @@ mark {
 .border-left-purple {
   border-left: 3px solid #5E35B1 !important;
 }
-
-// OST2: Indigo light/dark theme toggle. The Indigo dark partial is entirely scoped
-// to `body.indigo-dark-theme`, so the light Studio look is unchanged.
-@import "header/theme-toggle/ThemeToggle";
-@import "~@edly-io/indigo-brand-openedx/paragon/dark";
