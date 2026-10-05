@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
@@ -13,6 +13,7 @@ import { COMPONENT_TYPES } from '../../generic/block-type-utils/constants';
 import ComponentModalView from './add-component-modals/ComponentModalView';
 import AddComponentButton from './add-component-btn';
 import messages from './messages';
+import { buildOst2ComponentMenu, OST2_MARKDOWN_TYPE } from './ost2ComponentMenu';
 import { ComponentPicker } from '../../library-authoring/component-picker';
 import { messageTypes } from '../constants';
 import { useIframe } from '../../generic/hooks/context/hooks';
@@ -45,6 +46,10 @@ const AddComponent = ({
   const [usageId, setUsageId] = useState(null);
   const { sendMessageToIframe } = useIframe();
   const { useVideoGalleryFlow, useReactMarkdownEditor } = useSelector(getWaffleFlags);
+  const { menu: menuTemplates, movedTargets } = useMemo(
+    () => buildOst2ComponentMenu(Array.isArray(componentTemplates) ? componentTemplates : []),
+    [componentTemplates],
+  );
 
   const receiveMessage = useCallback(({ data: { type, payload } }) => {
     if (type === messageTypes.showMultipleComponentPicker) {
@@ -120,6 +125,12 @@ const AddComponent = ({
         showAddLibraryContentModal();
         break;
       case COMPONENT_TYPES.advanced:
+        // OST2: component types moved into the Advanced dialog create exactly
+        // what their own button used to.
+        if (movedTargets[moduleName]) {
+          handleCreateNewXBlock(movedTargets[moduleName].type, movedTargets[moduleName].moduleName);
+          break;
+        }
         handleCreateNewCourseXBlock({ type: moduleName, category: moduleName, parentLocator: blockId });
         break;
       case COMPONENT_TYPES.openassessment:
@@ -148,7 +159,7 @@ const AddComponent = ({
           <>
             <h5 className="h3 mb-4 text-center">{intl.formatMessage(messages.title)}</h5>
             <ul className="new-component-type list-unstyled m-0 d-flex flex-wrap justify-content-center">
-              {componentTemplates.map((component) => {
+              {menuTemplates.map((component) => {
                 const { type, displayName, beta } = component;
                 let modalParams;
 
@@ -178,6 +189,16 @@ const AddComponent = ({
                       isOpen: isOpenOpenAssessment,
                     };
                     break;
+                  case OST2_MARKDOWN_TYPE:
+                    return (
+                      <li key={type}>
+                        <AddComponentButton
+                          onClick={() => handleCreateNewXBlock(COMPONENT_TYPES.advanced, OST2_MARKDOWN_TYPE)}
+                          displayName={displayName}
+                          type={type}
+                        />
+                      </li>
+                    );
                   default:
                     return (
                       <li key={type}>

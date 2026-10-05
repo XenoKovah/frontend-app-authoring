@@ -75,8 +75,36 @@ const renderComponent = (props) => render(
   </AppProvider>,
 );
 
+// OST2: only Markdown, Text, Video, Problem and Discussion have their own
+// buttons; every other component type is created from the Advanced dialog.
+const getMenuButtonLabels = () => within(screen.getByRole('list'))
+  .getAllByRole('button')
+  .map((button) => button.querySelector('.small').textContent);
+
+const chooseInAdvancedDialog = (optionName) => {
+  userEvent.click(screen.getByRole('button', {
+    name: new RegExp(`${messages.buttonText.defaultMessage} Advanced`, 'i'),
+  }));
+  const dialog = screen.getByRole('dialog');
+  userEvent.click(within(dialog).getByRole('radio', { name: optionName }));
+  userEvent.click(within(dialog).getByRole('button', { name: messages.modalBtnText.defaultMessage }));
+};
+
+const mockWithMarkdown = () => ({
+  ...courseSectionVerticalMock,
+  component_templates: courseSectionVerticalMock.component_templates.map((component) => (
+    component.type === COMPONENT_TYPES.advanced
+      ? {
+        ...component,
+        templates: [...component.templates, { category: 'markdown', display_name: 'Markdown', support_level: true }],
+      }
+      : component
+  )),
+});
+
 describe('<AddComponent />', () => {
   beforeEach(async () => {
+    handleCreateNewCourseXBlockMock.mockClear();
     initializeMockApp({
       authenticatedUser: {
         userId: 3,
@@ -96,22 +124,58 @@ describe('<AddComponent />', () => {
 
   it('render AddComponent component correctly', () => {
     const { getByRole } = renderComponent();
-    const componentTemplates = courseSectionVerticalMock.component_templates;
 
     expect(getByRole('heading', { name: messages.title.defaultMessage })).toBeInTheDocument();
-    Object.keys(componentTemplates).forEach((component) => {
-      const btn = getByRole('button', {
-        name: new RegExp(
-          `${componentTemplates[component].type
-          } ${messages.buttonText.defaultMessage} ${componentTemplates[component].display_name}`,
-          'i',
-        ),
-      });
-      expect(btn).toBeInTheDocument();
-      if (component.beta) {
-        expect(within(btn).queryByText('Beta')).toBeInTheDocument();
-      }
+    expect(getMenuButtonLabels()).toEqual(['Text', 'Video', 'Problem', 'Discussion', 'Advanced']);
+  });
+
+  it('puts Markdown first and takes it out of the Advanced dialog', async () => {
+    axiosMock
+      .onGet(getCourseSectionVerticalApiUrl(blockId))
+      .reply(200, mockWithMarkdown());
+    await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
+    renderComponent();
+
+    expect(getMenuButtonLabels()).toEqual(['Markdown', 'Text', 'Video', 'Problem', 'Discussion', 'Advanced']);
+
+    userEvent.click(screen.getByRole('button', {
+      name: new RegExp(`${messages.buttonText.defaultMessage} Advanced`, 'i'),
+    }));
+    expect(within(screen.getByRole('dialog')).queryByRole('radio', { name: 'Markdown' })).not.toBeInTheDocument();
+  });
+
+  it('creates a Markdown xblock from the Markdown button', async () => {
+    axiosMock
+      .onGet(getCourseSectionVerticalApiUrl(blockId))
+      .reply(200, mockWithMarkdown());
+    await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
+    renderComponent();
+
+    userEvent.click(screen.getByRole('button', {
+      name: new RegExp(`${messages.buttonText.defaultMessage} Markdown`, 'i'),
+    }));
+    expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
+      parentLocator: '123',
+      type: 'markdown',
+      category: 'markdown',
     });
+  });
+
+  it('lists the other component types alphabetically in the Advanced dialog', () => {
+    renderComponent();
+    userEvent.click(screen.getByRole('button', {
+      name: new RegExp(`${messages.buttonText.defaultMessage} Advanced`, 'i'),
+    }));
+    const labels = within(screen.getByRole('dialog')).getAllByRole('radio').map((radio) => radio.labels[0].textContent);
+
+    expect(labels).toEqual(expect.arrayContaining([
+      'Drag and Drop',
+      'Legacy Library Content',
+      'Library Content (Beta)',
+      'Open Response: Peer Assessment Only',
+      'Problem Bank (Beta)',
+    ]));
+    expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b)));
   });
 
   it('AddComponent component doesn\'t render when there aren\'t componentTemplates', async () => {
@@ -129,7 +193,6 @@ describe('<AddComponent />', () => {
   });
 
   it('AddComponent component item doesn\'t render when there aren\'t templates', async () => {
-    const componentTemplates = courseSectionVerticalMock.component_templates;
     axiosMock
       .onGet(getCourseSectionVerticalApiUrl(blockId))
       .reply(200, {
@@ -149,23 +212,9 @@ describe('<AddComponent />', () => {
       });
     await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
 
-    const { queryByRole, getByRole } = renderComponent();
+    renderComponent();
 
-    Object.keys(componentTemplates).map((component) => {
-      if (componentTemplates[component].type === COMPONENT_TYPES.discussion) {
-        return expect(queryByRole('button', {
-          name: new RegExp(`${messages.buttonText.defaultMessage} ${componentTemplates[component].display_name}`, 'i'),
-        })).not.toBeInTheDocument();
-      }
-
-      return expect(getByRole('button', {
-        name: new RegExp(
-          `${componentTemplates[component].type
-          } ${messages.buttonText.defaultMessage} ${componentTemplates[component].display_name}`,
-          'i',
-        ),
-      })).toBeInTheDocument();
-    });
+    expect(getMenuButtonLabels()).toEqual(['Text', 'Video', 'Problem', 'Advanced']);
   });
 
   it('handleCreateNewCourseXblock does\'t call with custom component create button is clicked', async () => {
@@ -184,13 +233,9 @@ describe('<AddComponent />', () => {
       });
     await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
 
-    const { getByRole } = renderComponent();
+    renderComponent();
 
-    const customComponentButton = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Custom`, 'i'),
-    });
-
-    userEvent.click(customComponentButton);
+    chooseInAdvancedDialog('Custom');
     expect(handleCreateNewCourseXBlockMock).not.toHaveBeenCalled();
   });
 
@@ -210,13 +255,9 @@ describe('<AddComponent />', () => {
   });
 
   it('calls handleCreateNewCourseXblock with correct parameters when Drag-and-Drop xblock create button is clicked', () => {
-    const { getByRole } = renderComponent();
+    renderComponent();
 
-    const discussionButton = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Drag and Drop`, 'i'),
-    });
-
-    userEvent.click(discussionButton);
+    chooseInAdvancedDialog('Drag and Drop');
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalled();
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
       parentLocator: '123',
@@ -240,13 +281,9 @@ describe('<AddComponent />', () => {
   });
 
   it('calls handleCreateNewCourseXBlock with correct parameters when Problem bank xblock create button is clicked', () => {
-    const { getByRole } = renderComponent();
+    renderComponent();
 
-    const problemBankBtn = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Problem Bank`, 'i'),
-    });
-
-    userEvent.click(problemBankBtn);
+    chooseInAdvancedDialog('Problem Bank (Beta)');
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalled();
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
       parentLocator: '123',
@@ -271,13 +308,9 @@ describe('<AddComponent />', () => {
   });
 
   it('creates new "Library" xblock on click', () => {
-    const { getByRole } = renderComponent();
+    renderComponent();
 
-    const libraryButton = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Legacy Library Content`, 'i'),
-    });
-
-    userEvent.click(libraryButton);
+    chooseInAdvancedDialog('Legacy Library Content');
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalled();
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
       parentLocator: '123',
@@ -348,21 +381,19 @@ describe('<AddComponent />', () => {
   });
 
   it('verifies "Open Response" component selection in modal', async () => {
-    const { getByRole, getByText } = renderComponent();
-    const openResponseBtn = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Open Response`, 'i'),
-    });
+    const { getByRole } = renderComponent();
     const componentTemplates = courseSectionVerticalMock.component_templates;
 
-    userEvent.click(openResponseBtn);
+    userEvent.click(getByRole('button', {
+      name: new RegExp(`${messages.buttonText.defaultMessage} Advanced`, 'i'),
+    }));
     const modalContainer = getByRole('dialog');
 
     await waitFor(() => {
-      expect(getByText(/Add open response component/i)).toBeInTheDocument();
       componentTemplates.forEach((componentTemplate) => {
         if (componentTemplate.type === COMPONENT_TYPES.openassessment) {
           componentTemplate.templates.forEach((template) => {
-            expect(within(modalContainer).getByRole('radio', { name: template.display_name })).toBeInTheDocument();
+            expect(within(modalContainer).getByRole('radio', { name: `Open Response: ${template.display_name}` })).toBeInTheDocument();
           });
         }
       });
@@ -422,22 +453,9 @@ describe('<AddComponent />', () => {
   });
 
   it('verifies "Open Response" component creation and submission in modal', () => {
-    const { getByRole } = renderComponent();
-    const openResponseButton = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Open Response`, 'i'),
-    });
+    renderComponent();
 
-    userEvent.click(openResponseButton);
-    const modalContainer = getByRole('dialog');
-
-    const radioInput = within(modalContainer).getByRole('radio', { name: 'Peer Assessment Only' });
-    const sendBtn = within(modalContainer).getByRole('button', { name: messages.modalBtnText.defaultMessage });
-
-    expect(sendBtn).toBeDisabled();
-    userEvent.click(radioInput);
-    expect(sendBtn).not.toBeDisabled();
-
-    userEvent.click(sendBtn);
+    chooseInAdvancedDialog('Open Response: Peer Assessment Only');
 
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalled();
     expect(handleCreateNewCourseXBlockMock).toHaveBeenCalledWith({
@@ -449,10 +467,7 @@ describe('<AddComponent />', () => {
 
   it('shows library picker on clicking v2 library content btn', async () => {
     renderComponent();
-    const libBtn = await screen.findByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Library content`, 'i'),
-    });
-    userEvent.click(libBtn);
+    chooseInAdvancedDialog('Library Content (Beta)');
 
     // click dummy button to execute onComponentSelected prop.
     const dummyBtn = await screen.findByRole('button', { name: 'Dummy button' });
@@ -469,10 +484,7 @@ describe('<AddComponent />', () => {
 
   it('closes library component picker on close', async () => {
     renderComponent();
-    const libBtn = await screen.findByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Library content`, 'i'),
-    });
-    userEvent.click(libBtn);
+    chooseInAdvancedDialog('Library Content (Beta)');
 
     expect(screen.queryByRole('button', { name: 'Dummy button' })).toBeInTheDocument();
     // click dummy button to execute onComponentSelected prop.
