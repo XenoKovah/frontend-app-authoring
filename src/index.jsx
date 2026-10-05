@@ -25,6 +25,7 @@ import {
 import initializeStore from './store';
 import CourseAuthoringRoutes from './CourseAuthoringRoutes';
 import Head from './head/Head';
+import { initializeTheme } from './header/theme-toggle';
 import { StudioHome } from './studio-home';
 import CourseRerun from './course-rerun';
 import { TaxonomyLayout, TaxonomyDetailPage, TaxonomyListPage } from './taxonomy';
@@ -114,6 +115,7 @@ const App = () => {
 };
 
 subscribe(APP_READY, () => {
+  initializeTheme();
   const root = createRoot(document.getElementById('root'));
 
   root.render(

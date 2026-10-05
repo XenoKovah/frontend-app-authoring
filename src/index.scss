@@ -70,3 +70,8 @@ mark {
 .border-left-purple {
   border-left: 3px solid #5E35B1 !important;
 }
+
+// OST2: Indigo light/dark theme toggle. The Indigo dark partial is entirely scoped
+// to `body.indigo-dark-theme`, so the light Studio look is unchanged.
+@import "header/theme-toggle/ThemeToggle";
+@import "~@edly-io/indigo-brand-openedx/paragon/dark";

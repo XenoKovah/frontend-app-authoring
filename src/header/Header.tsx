@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -8,8 +10,43 @@ import { getWaffleFlags } from '../data/selectors';
 import { SearchModal } from '../search-modal';
 import { useContentMenuItems, useSettingMenuItems, useToolsMenuItems } from './hooks';
 import messages from './messages';
+import { ThemeToggle } from './theme-toggle';
+import { isThemeToggleEnabled } from './theme-toggle/utils';
 
 type ContainerPropsType = React.ComponentProps<typeof Container>;
+
+// OST2: StudioHeader has no slot for extra controls, so the theme toggle is portaled
+// into its header row, just before the last item (the user menu). The row is rebuilt
+// when the header switches between its desktop and mobile layouts, so re-attach then.
+const useHeaderRowHost = (enabled: boolean) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [host, setHost] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!enabled || !wrapper) {
+      return undefined;
+    }
+    const node = document.createElement('div');
+    node.className = 'ost2-theme-toggle-host';
+    const attach = () => {
+      const row = wrapper.querySelector('header');
+      if (row && node.parentElement !== row) {
+        row.insertBefore(node, row.lastElementChild);
+      }
+    };
+    attach();
+    setHost(node);
+    const observer = new MutationObserver(attach);
+    observer.observe(wrapper, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      node.remove();
+    };
+  }, [enabled]);
+
+  return { wrapperRef, host };
+};
 
 interface HeaderProps {
   contextId?: string,
@@ -34,6 +71,7 @@ const Header = ({
   const waffleFlags = useSelector(getWaffleFlags);
 
   const [isShowSearchModalOpen, openSearchModal, closeSearchModal] = useToggle(false);
+  const { wrapperRef, host: themeToggleHost } = useHeaderRowHost(isThemeToggleEnabled());
 
   const studioBaseUrl = getConfig().STUDIO_BASE_URL;
   const meiliSearchEnabled = [true, 'true'].includes(getConfig().MEILISEARCH_ENABLED);
@@ -68,17 +106,20 @@ const Header = ({
 
   return (
     <>
-      <StudioHeader
-        org={org}
-        number={number}
-        title={title}
-        isHiddenMainMenu={isHiddenMainMenu}
-        mainMenuDropdowns={mainMenuDropdowns}
-        outlineLink={getOutlineLink()}
-        searchButtonAction={meiliSearchEnabled ? openSearchModal : undefined}
-        containerProps={containerProps}
-        isNewHomePage={waffleFlags.useNewHomePage}
-      />
+      <div ref={wrapperRef}>
+        <StudioHeader
+          org={org}
+          number={number}
+          title={title}
+          isHiddenMainMenu={isHiddenMainMenu}
+          mainMenuDropdowns={mainMenuDropdowns}
+          outlineLink={getOutlineLink()}
+          searchButtonAction={meiliSearchEnabled ? openSearchModal : undefined}
+          containerProps={containerProps}
+          isNewHomePage={waffleFlags.useNewHomePage}
+        />
+      </div>
+      {themeToggleHost && createPortal(<ThemeToggle />, themeToggleHost)}
       {meiliSearchEnabled && (
         <SearchModal
           isOpen={isShowSearchModalOpen}
